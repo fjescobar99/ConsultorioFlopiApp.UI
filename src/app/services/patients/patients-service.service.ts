@@ -4,17 +4,17 @@ import { Observable } from 'rxjs';
 import { PacienteDto } from '../../entities/patients/PacienteDto';
 import { PaginationObjectDto } from '../../entities/common/PaginationObjectDto';
 import { AppConfigService } from '../config/config-service.service';
+import { ApiResponse } from '../../entities/common/ApiResponse';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientsServiceService {
 
-  private config = inject(AppConfigService);
-
+  // private config = inject(AppConfigService);
   constructor(private http: HttpClient) { }
 
-  getPacientes(paginationObj: PaginationObjectDto): Observable<PacienteDto>{
-    return this.http.post<PacienteDto>(`${this.config.apiUrl}/pacientes`,paginationObj);
+  getPacientes(paginationObj: PaginationObjectDto): Observable<ApiResponse<PacienteDto>>{
+    return this.http.post<ApiResponse<PacienteDto>>(`https://localhost:44329/Paciente/GetPacientes`,paginationObj);
   }
 }
