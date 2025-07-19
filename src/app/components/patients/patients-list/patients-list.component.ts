@@ -1,54 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { PatientsServiceService } from '../../../services/patients/patients-service.service';
 import { PaginationObjectDto } from '../../../entities/common/PaginationObjectDto';
 import { ApiResponse } from '../../../entities/common/ApiResponse';
 import { PacienteDto } from '../../../entities/patients/PacienteDto';
-import { DatePipe } from '@angular/common';
-import { debug } from 'console';
-
-const ELEMENT_DATA: any[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
+import { CommonModule, DatePipe } from '@angular/common';
+import { LoadingSpinnerComponent } from "../../common/loading-spinner/loading-spinner.component";
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-patients-list',
   standalone: true,
-  imports: [MatTableModule, DatePipe],
+  imports: [MatTableModule, DatePipe, LoadingSpinnerComponent, CommonModule, MatPaginatorModule],
   templateUrl: './patients-list.component.html',
   styleUrl: './patients-list.component.css'
 })
 
-export class PatientsListComponent implements OnInit {
-  datasource: PacienteDto[] = [];
-
-  constructor(private patientsService: PatientsServiceService) { 
-  }
-
-  ngOnInit(): void {
-    const obj: PaginationObjectDto = {
-      orderBy: 'apellido',
-      page: 1,
-      rowsPerPage: 5,
-      sortDirection: 'asc'
-    }
-    debugger;
-    this.patientsService.getPacientes(obj)
-    .subscribe((response: ApiResponse<PacienteDto>) => { 
-      console.log(response);
-      this.datasource = response.items;
-    })
-  }
-
+export class PatientsListComponent implements OnInit, AfterViewInit {
+  dataSource = new MatTableDataSource<PacienteDto>();
+  loading: boolean = false;
+  error: string | null = null;
   displayedColumns: string[] = [
     'id',
     'dni',
@@ -67,5 +38,61 @@ export class PatientsListComponent implements OnInit {
     'prepaga',
     'valorConsulta'
   ];
+  
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  
+  constructor(private patientsService: PatientsServiceService) { 
+  }
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.paginator.page.subscribe(() => {
+      const pageIndex = this.paginator.pageIndex + 1; // Angular empieza en 0
+      const pageSize = this.paginator.pageSize;
+      this.getPacientes(pageIndex, pageSize);
+    });
+  }
+
+  ngOnInit(): void {
+    this.loading = true;
+    const obj: PaginationObjectDto = {
+      orderBy: 'apellido',
+      page: 1,
+      rowsPerPage: 5,
+      sortDirection: 'asc'
+    }
+    this.patientsService.getPacientes(obj)
+    .subscribe({
+      next: (response: ApiResponse<PacienteDto>) => { 
+      this.dataSource.data = response.items;
+    },
+    error: () => {this.error = 'Hubo un error al cargar los pacientes'; this.loading = false;},
+    complete: () => this.loading = false
+  }
+  )
+  }
+   getPacientes(page: number, rowsPerPage: number): void {
+    this.loading = true;
+    const obj: PaginationObjectDto = {
+      orderBy: 'apellido',
+      page: page,
+      rowsPerPage: rowsPerPage,
+      sortDirection: 'asc'
+    };
+
+    this.patientsService.getPacientes(obj).subscribe({
+      next: (response: ApiResponse<PacienteDto>) => {
+        this.dataSource.data = response.items;
+      },
+      error: () => {
+        this.error = 'Hubo un error al cargar los pacientes';
+        this.loading = false;
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
+  }
+
+  
   
 }
