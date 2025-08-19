@@ -15,6 +15,6 @@ export class PatientsServiceService {
   constructor(private http: HttpClient) { }
 
   getPacientes(paginationObj: PaginationObjectDto): Observable<ApiResponse<PacienteDto>>{
-    return this.http.post<ApiResponse<PacienteDto>>(`https://localhost:44329/Paciente/GetPacientes`,paginationObj);
+    return this.http.post<ApiResponse<PacienteDto>>(`https://localhost:44329/Patient/GetPacientes`,paginationObj);
   }
 }

@@ -7,11 +7,20 @@ import { PacienteDto } from '../../../entities/patients/PacienteDto';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LoadingSpinnerComponent } from "../../common/loading-spinner/loading-spinner.component";
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { NewPatientFormComponent } from '../new-patient-form/new-patient-form.component';
+import {
+  MatDialog
+} from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDividerModule} from '@angular/material/divider';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-patients-list',
   standalone: true,
-  imports: [MatTableModule, DatePipe, LoadingSpinnerComponent, CommonModule, MatPaginatorModule],
+  imports: [MatTableModule, DatePipe, LoadingSpinnerComponent, CommonModule, MatPaginatorModule, MatInputModule, FormsModule, MatButtonModule, MatButtonModule, MatDividerModule, MatIconModule, MatIconModule],
   templateUrl: './patients-list.component.html',
   styleUrl: './patients-list.component.css'
 })
@@ -20,56 +29,38 @@ export class PatientsListComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<PacienteDto>();
   loading: boolean = false;
   error: string | null = null;
+  numberOfItems: number = 0;
   displayedColumns: string[] = [
     'id',
     'dni',
     'nombre',
     'apellido',
-    'domicilio',
     'email',
-    'fechaNac',
-    'ocupacion',
-    'profesion',
-    'antecedentesClinicos',
     'copago',
-    'estadoCivil',
-    'grupoFliar',
     'particular',
     'prepaga',
-    'valorConsulta'
   ];
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   
-  constructor(private patientsService: PatientsServiceService) { 
+  constructor(private patientsService: PatientsServiceService,
+    private dialog: MatDialog,
+  ) { 
   }
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.paginator.page.subscribe(() => {
-      const pageIndex = this.paginator.pageIndex + 1; // Angular empieza en 0
-      const pageSize = this.paginator.pageSize;
-      this.getPacientes(pageIndex, pageSize);
-    });
+  ngOnInit(): void {
+  this.getPacientes(1, 5);
   }
 
-  ngOnInit(): void {
-    this.loading = true;
-    const obj: PaginationObjectDto = {
-      orderBy: 'apellido',
-      page: 1,
-      rowsPerPage: 5,
-      sortDirection: 'asc'
-    }
-    this.patientsService.getPacientes(obj)
-    .subscribe({
-      next: (response: ApiResponse<PacienteDto>) => { 
-      this.dataSource.data = response.items;
-    },
-    error: () => {this.error = 'Hubo un error al cargar los pacientes'; this.loading = false;},
-    complete: () => this.loading = false
-  }
-  )
-  }
+ngAfterViewInit(): void {
+  this.paginator.page.subscribe(() => {
+    const pageIndex = this.paginator.pageIndex + 1;
+  console.log('cambiando de pagina')
+    const pageSize = this.paginator.pageSize;
+    this.getPacientes(pageIndex, pageSize);
+  });
+}
+
+  
    getPacientes(page: number, rowsPerPage: number): void {
     this.loading = true;
     const obj: PaginationObjectDto = {
@@ -79,9 +70,12 @@ export class PatientsListComponent implements OnInit, AfterViewInit {
       sortDirection: 'asc'
     };
 
+    console.log(obj)
+    
     this.patientsService.getPacientes(obj).subscribe({
       next: (response: ApiResponse<PacienteDto>) => {
         this.dataSource.data = response.items;
+        this.numberOfItems = response.numberOfItems;
       },
       error: () => {
         this.error = 'Hubo un error al cargar los pacientes';
@@ -93,6 +87,16 @@ export class PatientsListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  
-  
+  openNewPatientForm(){
+    let dialogRef = this.dialog.open(NewPatientFormComponent, {
+    height: '400px',
+    width: '600px',
+  });
+  dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // refrescar la tabla o mostrar mensaje
+        console.log('Nuevo paciente creado:', result);
+      }
+    });
+  }
 }

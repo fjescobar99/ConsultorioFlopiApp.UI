@@ -1,0 +1,55 @@
+/* contenedor de página: que todo estire al 100% */
+
+.page-wrap {
+    width: 100%;
+    padding: 0 24px;
+    /* opcional: margen interno simétrico */
+    box-sizing: border-box;
+}
+
+
+/* botón centrado con separación */
+
+.btn-top {
+    display: block;
+    margin: 0 auto 16px auto;
+}
+
+
+/* card que envuelve tabla + paginador y les da SOMBRA/BORDES */
+
+.table-card {
+    width: 100%;
+    display: block;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    /* redondeo prolijo */
+}
+
+
+/* ¡clave!: que la tabla use TODO el ancho del card */
+
+.full-width-table {
+    width: 100%;
+}
+
+
+/* que el paginador también ocupe el mismo ancho y no “salga” a la derecha */
+
+.table-card mat-paginator {
+    width: 100%;
+    display: block;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    /* divide visualmente */
+}
+
+
+/* por las dudas, evitamos límites que puedan achicar el card */
+
+.table-card,
+.full-width-table,
+.table-card mat-paginator {
+    max-width: none !important;
+}

@@ -1,117 +1,62 @@
-<div *ngIf="loading">
-    <app-loading-spinner></app-loading-spinner>
+<div class="page-wrap">
+    <button mat-flat-button color="primary" (click)="openNewPatientForm()" class="btn-top">
+    Nuevo paciente
+    <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
+  </button>
+
+    <!-- Card que contiene tabla + paginador -->
+    <div class="table-card">
+        <mat-table [dataSource]="dataSource" class="full-width-table">
+            <!-- columnas -->
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> ID </th>
+                <td mat-cell *matCellDef="let e"> {{ e.id }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="dni">
+                <th mat-header-cell *matHeaderCellDef> DNI </th>
+                <td mat-cell *matCellDef="let e"> {{ e.dni }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef> Nombre </th>
+                <td mat-cell *matCellDef="let e"> {{ e.nombre }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="apellido">
+                <th mat-header-cell *matHeaderCellDef> Apellido </th>
+                <td mat-cell *matCellDef="let e"> {{ e.apellido }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef> Email </th>
+                <td mat-cell *matCellDef="let e"> {{ e.email }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="copago">
+                <th mat-header-cell *matHeaderCellDef> Copago </th>
+                <td mat-cell *matCellDef="let e"> {{ e.copago | currency }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="particular">
+                <th mat-header-cell *matHeaderCellDef> Particular </th>
+                <td mat-cell *matCellDef="let e"> {{ e.particular ? 'Sí' : 'No' }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="prepaga">
+                <th mat-header-cell *matHeaderCellDef> Prepaga </th>
+                <td mat-cell *matCellDef="let e"> {{ e.prepaga ? 'Sí' : 'No' }} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </mat-table>
+
+        <mat-paginator [length]="numberOfItems" [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons>
+        </mat-paginator>
+    </div>
 </div>
 
-<div *ngIf="!loading">
-    <br>
-    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
-        <!-- Columnas -->
-        <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> ID </th>
-            <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
-        </ng-container>
-
-        <!-- Repetí lo mismo para las demás columnas -->
-        <ng-container matColumnDef="dni">
-            <th mat-header-cell *matHeaderCellDef> DNI </th>
-            <td mat-cell *matCellDef="let element"> {{ element.dni }} </td>
-        </ng-container>
-
-        <!-- Nombre -->
-        <ng-container matColumnDef="nombre">
-            <th mat-header-cell *matHeaderCellDef> Nombre </th>
-            <td mat-cell *matCellDef="let element"> {{ element.nombre }} </td>
-        </ng-container>
-
-        <!-- Apellido -->
-        <ng-container matColumnDef="apellido">
-            <th mat-header-cell *matHeaderCellDef> Apellido </th>
-            <td mat-cell *matCellDef="let element"> {{ element.apellido }} </td>
-        </ng-container>
-
-        <!-- Domicilio -->
-        <ng-container matColumnDef="domicilio">
-            <th mat-header-cell *matHeaderCellDef> Domicilio </th>
-            <td mat-cell *matCellDef="let element"> {{ element.domicilio }} </td>
-        </ng-container>
-
-        <!-- Email -->
-        <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef> Email </th>
-            <td mat-cell *matCellDef="let element"> {{ element.email }} </td>
-        </ng-container>
-
-        <!-- Fecha de Nacimiento -->
-        <ng-container matColumnDef="fechaNac">
-            <th mat-header-cell *matHeaderCellDef> Fecha Nac. </th>
-            <td mat-cell *matCellDef="let element"> {{ element.fechaNac | date }} </td>
-        </ng-container>
-
-        <!-- Ocupación -->
-        <ng-container matColumnDef="ocupacion">
-            <th mat-header-cell *matHeaderCellDef> Ocupación </th>
-            <td mat-cell *matCellDef="let element"> {{ element.ocupacion }} </td>
-        </ng-container>
-
-        <!-- Profesión -->
-        <ng-container matColumnDef="profesion">
-            <th mat-header-cell *matHeaderCellDef> Profesión </th>
-            <td mat-cell *matCellDef="let element"> {{ element.profesion }} </td>
-        </ng-container>
-
-        <!-- Antecedentes Clínicos -->
-        <ng-container matColumnDef="antecedentesClinicos">
-            <th mat-header-cell *matHeaderCellDef> Antecedentes </th>
-            <td mat-cell *matCellDef="let element"> {{ element.antecedentesClinicos }} </td>
-        </ng-container>
-
-        <!-- Copago -->
-        <ng-container matColumnDef="copago">
-            <th mat-header-cell *matHeaderCellDef> Copago </th>
-            <td mat-cell *matCellDef="let element"> {{ element.copago }} </td>
-        </ng-container>
-
-        <!-- Estado Civil -->
-        <ng-container matColumnDef="estadoCivil">
-            <th mat-header-cell *matHeaderCellDef> Estado Civil </th>
-            <td mat-cell *matCellDef="let element"> {{ element.estadoCivil }} </td>
-        </ng-container>
-
-        <!-- Grupo Familiar -->
-        <ng-container matColumnDef="grupoFliar">
-            <th mat-header-cell *matHeaderCellDef> Grupo Familiar </th>
-            <td mat-cell *matCellDef="let element"> {{ element.grupoFliar }} </td>
-        </ng-container>
-
-
-        <!-- Particular -->
-        <ng-container matColumnDef="particular">
-            <th mat-header-cell *matHeaderCellDef> Particular </th>
-            <td mat-cell *matCellDef="let element"> {{ element.particular ? 'Sí' : 'No' }} </td>
-        </ng-container>
-
-        <!-- Prepaga -->
-        <ng-container matColumnDef="prepaga">
-            <th mat-header-cell *matHeaderCellDef> Prepaga </th>
-            <td mat-cell *matCellDef="let element"> {{ element.prepaga ? 'Sí' : 'No' }} </td>
-        </ng-container>
-
-        <!-- Valor Consulta -->
-        <ng-container matColumnDef="valorConsulta">
-            <th mat-header-cell *matHeaderCellDef> Valor Consulta </th>
-            <td mat-cell *matCellDef="let element"> {{ element.valorConsulta }} </td>
-        </ng-container>
-
-        <!-- Header y Rows -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-    </mat-table>
-
-    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons>
-    </mat-paginator>
-</div>
 
 <!-- Mensaje de error -->
 <div class="container">
