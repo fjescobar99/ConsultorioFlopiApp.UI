@@ -16,6 +16,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthServiceService } from '../../../services/auth/auth-service.service';
 
 @Component({
   selector: 'app-patients-list',
@@ -45,6 +46,7 @@ export class PatientsListComponent implements OnInit, AfterViewInit {
   
   constructor(private patientsService: PatientsServiceService,
     private dialog: MatDialog,
+  private authservice: AuthServiceService
   ) { 
   }
   ngOnInit(): void {
@@ -54,7 +56,6 @@ export class PatientsListComponent implements OnInit, AfterViewInit {
 ngAfterViewInit(): void {
   this.paginator.page.subscribe(() => {
     const pageIndex = this.paginator.pageIndex + 1;
-  console.log('cambiando de pagina')
     const pageSize = this.paginator.pageSize;
     this.getPacientes(pageIndex, pageSize);
   });
@@ -70,8 +71,6 @@ ngAfterViewInit(): void {
       sortDirection: 'asc'
     };
 
-    console.log(obj)
-    
     this.patientsService.getPacientes(obj).subscribe({
       next: (response: ApiResponse<PacienteDto>) => {
         this.dataSource.data = response.items;
@@ -92,10 +91,13 @@ ngAfterViewInit(): void {
     height: '400px',
     width: '600px',
   });
+  this.authservice.login("admin", "admin123").subscribe({
+      next: (response: any) => {
+        console.log('Login exitoso', response);
+        localStorage.setItem('access_token', response.accessToken);
+      }});
   dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // refrescar la tabla o mostrar mensaje
-        console.log('Nuevo paciente creado:', result);
       }
     });
   }

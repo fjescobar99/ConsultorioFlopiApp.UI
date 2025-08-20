@@ -8,5 +8,9 @@ export const routes: Routes = [
     },
     {
         path: 'consultorioPage', component: ConsultorioPageComponent
-    }
+    },
+    {
+        path: '', redirectTo: 'home', pathMatch: 'full'
+    },
+    { path: '**', redirectTo: 'home' } // comodín al final
 ];

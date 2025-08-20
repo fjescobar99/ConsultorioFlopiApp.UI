@@ -8,7 +8,6 @@ export class AppConfigService {
 
   loadConfig(env: string): Promise<void> {
     const fileName = `assets/configs/config.${env}.json`;
-    console.log(fileName);
     return fetch(fileName)
       .then(res => res.json())
       .then(json => {
